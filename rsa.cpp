@@ -1,7 +1,24 @@
 #include <iostream>
 #include <cmath>
 
-int32_t compute_modular_multiplicative_inverse(int32_t x, int32_t m)
+#define BUFFER_SIZE 256
+
+int32_t phi(int32_t m) {
+    int result = m;
+    for (int i = 2; i * i <= m; i++) {
+        if (m % i == 0) {
+            while (m % i == 0)
+                m /= i;
+            result -= result / i;
+        }
+    }
+    if (m > 1)
+        result -= result / m;
+
+    return result;
+}
+
+int32_t modular_multiplicative_inverse(int32_t x, int32_t m)
 {
     int32_t t = 0;
     int32_t r = m;
@@ -44,7 +61,7 @@ int32_t modular_exp(int32_t x, int32_t e, int32_t m)
     // OPTIONAL (only to compute with negative e)
     if (e < 0)
     {
-        x = compute_modular_multiplicative_inverse(x, m);
+        x = modular_multiplicative_inverse(x, m);
         e = -e;
     }
     // END OPTIONAL
@@ -58,20 +75,31 @@ int32_t modular_exp(int32_t x, int32_t e, int32_t m)
     return c;
 }
 
-// (x*e) % m
-int32_t modular_mult(int32_t x, int32_t e, int32_t m)
+int32_t compute_d(int32_t e, int32_t n)
 {
-    int32_t next_x = x % m;
-    int32_t next_e = e % m;
+    return modular_exp(e, -1, phi(n));
+}
 
-    return (next_x * next_e) % m;
+void encrypt(int32_t e, int32_t n, int32_t msg_plain[BUFFER_SIZE], int32_t msg_encr[BUFFER_SIZE])
+{
+    for (size_t i = 0; i < BUFFER_SIZE; i++)
+    {
+        msg_encr[i] = modular_exp(msg_plain[i], e, n);
+    }
+}
+
+void decrypt(int32_t e, int32_t n, int32_t msg_encr[BUFFER_SIZE], int32_t msg_plain[BUFFER_SIZE])
+{
+    int32_t d = compute_d(e, n);
+
+    for (size_t i = 0; i < BUFFER_SIZE; i++)
+    {
+        msg_plain[i] = modular_exp(msg_encr[i], d, n);
+    }
 }
 
 int main()
 {
-    int32_t res_c = compute_modular_multiplicative_inverse(17, 120);
-    std::cout << res_c << std::endl;
-
     std::cout << "MODULAR EXPONENTIATION" << std::endl;
     int32_t res = modular_exp(17, -1, 120);
     std::cout << res << ", expect 113" << std::endl;
@@ -81,75 +109,17 @@ int main()
     std::cout << res << ", expect 50" << std::endl;
 
     std::cout << std::endl;
-    std::cout << "MODULAR MULTIPLICATION" << std::endl;
-    res = modular_mult(1421, 1423, 12);
-    std::cout << res << ", expect 11" << std::endl;
-}
-
-/**
- * @brief This moduel implements the high level RSA algorithm
- * 
- * @return int 
- */
-/*
-int power(int x, int y, int p)
-{
- 
-    // Initialize answer
-    int res = 1;
- 
-    // Check till the number becomes zero
-    while (y > 0) {
- 
-        // If y is odd, multiply x with result
-        if (y % 2 == 1)
-            res = (res * x);
- 
-        // y = y/2
-        y = y >> 1;
- 
-        // Change x to x^2
-        x = (x * x);
-    }
-    return res % p;
-}
-
-// int gcd(int a, int b){
-//     int R; 
-//     while((a%b)>0){
-//         R = a % b;  //R=7           
-//         a = b;      // a = 24
-//         b = R;      //b = 7
-
-//     }
-//     return b;
-// }
-
-int main(){
-    // std::cout << "gcd(8, 12) = " << gcd(8, 12) << std::endl;
-    // std::cout << "gcd(79, 24) = " << gcd(79, 24) << std::endl;
-    // std::cout << "gcd(42, 120) = " << gcd(42, 120) << std::endl;
-    // int n, p, q, e, d, phi;
+    std::cout << "ENCRYPT" << std::endl;
+    int32_t msg_plain[BUFFER_SIZE] = {0};
+    int32_t msg_encr[BUFFER_SIZE] = {0};
     
-    // // phi = (p-1)(q-1), n = p*q
+    msg_plain[0] = 19;
+    encrypt(5, 119, msg_plain, msg_encr);
+    std::cout << msg_encr[0] << std::endl;
 
-    // p = 11; q = 13;
-    // n = p*q;
-    // //phi(n) is Euler's totient function of n 
-    // phi = (p-1)*(q-1); // (11-1)(13-1)-> 10*11 = 110
-    // //d is private exponent and e is public exponent
-    
-    // //public exponent 1 < e < phi(n)
-    // e = 7; // 
-    // //get the lowest possible e to begin with
-    // // while (gcd(e, phi) != 1)
-    // // {
-    // //     e++;
+    msg_plain[0] = 0;
 
-    // // }
-    // d = (1/e) % n;
-    // std::cout << "phi(n) = " << phi << "\nd = " << d <<std::endl;
-    // double lol = fmod(1/17, 120);
-    // std::cout << lol << std::endl;   
+    std::cout << "DECRYPT" << std::endl;
+    decrypt(5, 119, msg_encr, msg_plain);
+    std::cout << msg_plain[0] << std::endl;
 }
-*/

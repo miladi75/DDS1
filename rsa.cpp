@@ -3,21 +3,6 @@
 
 #define BUFFER_SIZE 256
 
-int32_t phi(int32_t m) {
-    int result = m;
-    for (int i = 2; i * i <= m; i++) {
-        if (m % i == 0) {
-            while (m % i == 0)
-                m /= i;
-            result -= result / i;
-        }
-    }
-    if (m > 1)
-        result -= result / m;
-
-    return result;
-}
-
 int32_t modular_multiplicative_inverse(int32_t x, int32_t m)
 {
     int32_t t = 0;
@@ -75,11 +60,6 @@ int32_t modular_exp(int32_t x, int32_t e, int32_t m)
     return c;
 }
 
-int32_t compute_d(int32_t e, int32_t n)
-{
-    return modular_exp(e, -1, phi(n));
-}
-
 void encrypt(int32_t e, int32_t n, int32_t msg_plain[BUFFER_SIZE], int32_t msg_encr[BUFFER_SIZE])
 {
     for (size_t i = 0; i < BUFFER_SIZE; i++)
@@ -88,10 +68,8 @@ void encrypt(int32_t e, int32_t n, int32_t msg_plain[BUFFER_SIZE], int32_t msg_e
     }
 }
 
-void decrypt(int32_t e, int32_t n, int32_t msg_encr[BUFFER_SIZE], int32_t msg_plain[BUFFER_SIZE])
+void decrypt(int32_t d, int32_t n, int32_t msg_encr[BUFFER_SIZE], int32_t msg_plain[BUFFER_SIZE])
 {
-    int32_t d = compute_d(e, n);
-
     for (size_t i = 0; i < BUFFER_SIZE; i++)
     {
         msg_plain[i] = modular_exp(msg_encr[i], d, n);

@@ -29,15 +29,16 @@ entity multiplication is
     
     port(
         input_a     : in std_logic_vector(C_block_size-1 downto 0);
-        input_b     : in std_logic vector(C_block_size-1 downto 0);
+        input_b     : in std_logic_vector(C_block_size-1 downto 0);
         enable_clk  : in std_logic;
-        input_n     : in std_logic;
+        input_n     : in in std_logic_vector(C_block_size-1 downto 0);
         out_mul     : out std_logic;
         );
 
 
 
 end multiplication;
+    
 
 
 architecture Behavioral of multiplication is

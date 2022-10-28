@@ -24,11 +24,11 @@ use IEEE.STD_LOGIC_1164.ALL;
 use ieee.numeric_std.all;
 
 entity PIPO_shift_register is
-    Port ( d : in STD_LOGIC_VECTOR (255 downto 0);
+    generic (C_block_size : integer := 256);
+    port ( d : in STD_LOGIC_VECTOR (C_block_size-1 downto 0);
            clk : in STD_LOGIC;
            reset_n : in STD_LOGIC;
-           sh : in STD_LOGIC;
-           q : out STD_LOGIC_VECTOR (255 downto 0)
+           q : out STD_LOGIC_VECTOR (C_block_size-1 downto 0)
            );
 end PIPO_shift_register;
 

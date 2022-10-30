@@ -33,7 +33,7 @@ entity multiplication is
         mul_a       : in STD_LOGIC_VECTOR(C_block_size-1 downto 0);
         
         mul_b       : in STD_LOGIC_VECTOR(C_block_size-1 downto 0);
-        enable      : in STD_LOGIC;
+        c_enable    : in STD_LOGIC;
         input_n     : in STD_LOGIC_VECTOR(C_block_size-1 downto 0);
         out_mul     : out STD_LOGIC_VECTOR(C_block_size-1 downto 0);
         done_mul    : out STD_LOGIC
@@ -46,27 +46,25 @@ end multiplication;
 
 
 architecture Behavioral of multiplication is
-    
---    signal counter_enable :  STD_LOGIC := '0';
     signal counter_out : STD_LOGIC_VECTOR(C_block_size-1 downto 0);
-
-begin
+    --component counter
     
+    --port map(
+    --coutner_out => y,
+    --y =>coutner_out ,
+    
+    --);
+
+begin 
+    COUNTER : entity work.counter
+    port map (
+      y => counter_out,
+     clk => i_clk,
+    reset_n => reset_n,
+    cnt_en => c_enable 
+    );  
  
-    process(i_clk, reset_n)
         
-    variable  counter : STD_LOGIC_VECTOR(C_block_size-1 downto 0 );                
-            
-        begin
-            if (reset_n = 1) then counter := "00000000";     
-            elsif(rising_edge(i_clk)) then counter := counter + 1;
-            
-            
-            end if;
-        
-        
-        
-        
-        end process;
+      
     
 end Behavioral;

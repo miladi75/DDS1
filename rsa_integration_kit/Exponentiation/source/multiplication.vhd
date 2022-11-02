@@ -28,11 +28,15 @@ entity multiplication is
     );
     
     port(
-        input_a     : in std_logic_vector(C_block_size-1 downto 0);
-        input_b     : in std_logic_vector(C_block_size-1 downto 0);
-        enable_clk  : in std_logic;
-        input_n     : in std_logic_vector(C_block_size-1 downto 0);
-        out_mul     : out std_logic_vector(C_block_size-1 downto 0)
+        i_clk       : in STD_LOGIC;
+        reset_n     : in STD_LOGIC;
+        mul_a       : in STD_LOGIC_VECTOR(C_block_size-1 downto 0);
+        
+        mul_b       : in STD_LOGIC_VECTOR(C_block_size-1 downto 0);
+        c_enable    : in STD_LOGIC;
+        input_n     : in STD_LOGIC_VECTOR(C_block_size-1 downto 0);
+        out_mul     : out STD_LOGIC_VECTOR(C_block_size-1 downto 0);
+        done_mul    : out STD_LOGIC
         );
 
 
@@ -42,8 +46,25 @@ end multiplication;
 
 
 architecture Behavioral of multiplication is
---    signal outSigMul    : 
-begin
+    signal counter_out : STD_LOGIC_VECTOR(C_block_size-1 downto 0);
+    --component counter
+    
+    --port map(
+    --coutner_out => y,
+    --y =>coutner_out ,
+    
+    --);
 
-
+begin 
+    COUNTER : entity work.counter
+    port map (
+      y => counter_out,
+     clk => i_clk,
+    reset_n => reset_n,
+    cnt_en => c_enable 
+    );  
+ 
+        
+      
+    
 end Behavioral;

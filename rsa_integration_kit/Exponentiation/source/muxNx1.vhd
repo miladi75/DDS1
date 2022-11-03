@@ -21,6 +21,8 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.math_real.ceil;
+use IEEE.math_real.log2;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values

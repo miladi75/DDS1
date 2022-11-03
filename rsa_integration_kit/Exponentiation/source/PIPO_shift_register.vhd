@@ -28,6 +28,7 @@ entity PIPO_shift_register is
     port ( d : in STD_LOGIC_VECTOR (C_block_size-1 downto 0);
            clk : in STD_LOGIC;
            reset_n : in STD_LOGIC;
+           enable : in STD_LOGIC;
            q : out STD_LOGIC_VECTOR (C_block_size-1 downto 0)
            );
 end PIPO_shift_register;
@@ -40,7 +41,9 @@ begin
     if (reset_n = '0') then
         q <= (others => '0');
     elsif(clk'event and clk = '1') then
-        q <= STD_LOGIC_VECTOR(shift_left(unsigned(d), 1));
+        if enable = '1' then
+            q <= STD_LOGIC_VECTOR(shift_left(unsigned(d), 1));
+        end if;
     end if;
     end process;
 

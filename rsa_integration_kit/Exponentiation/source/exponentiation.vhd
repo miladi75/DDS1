@@ -157,12 +157,11 @@ begin
 	   q => wire_modulus_out
 	);
 	
-	REG_result: entity work.register_reset_n_enable
+	REG_result: entity work.register_reset_n
 	generic map(C_block_size)
 	port map(
 	   clk => clk,
 	   reset_n => reset_n,
-	   enable => valid_out and ready_out,
 	   d => wire_c_in,
 	   q => result
 	);
@@ -209,7 +208,8 @@ begin
 	           ready_in <= '1';
 	           init_p_en <= '1';
 	           init_c_en <= '1';
-	           if valid_in = '1' then
+	           if valid_in = '1' and ready_in = '1' then
+	               ready_in <= '0';
 	               state <= RUNNING;
 	           end if;
 	       when RUNNING =>
@@ -228,6 +228,7 @@ begin
 	               init_c_en <= '0';
 	               if tmp_i >= C_block_size - 1 then
 	                   if ready_out = '1' then
+	                       valid_out <= '1';
 	                       state <= STORE_OUTPUT;
 	                   else
 	                       state <= WAIT_OUTPUT;
@@ -240,12 +241,14 @@ begin
 	       when WAIT_OUTPUT =>
 	           ready_out_mul <= '0';
 	           if ready_out = '1' then
+	               valid_out <= '1';
 	               state <= STORE_OUTPUT;
 	           end if;
 	       when STORE_OUTPUT =>
 	           ready_out_mul <= '0';
-	           valid_out <= '1';
-	           state <= RESET;
+	           if ready_out = '1' and valid_out = '1' then
+	               state <= RESET;
+	           end if;
 	       when others =>
 	           state <= RESET;
 	       end case;

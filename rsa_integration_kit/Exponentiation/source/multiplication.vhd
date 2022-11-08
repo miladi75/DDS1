@@ -125,12 +125,11 @@ begin
 	   q => wire_modulus_out
 	);
 	
-	REG_result: entity work.register_reset_n_enable
+	REG_result: entity work.register_reset_n
 	generic map(C_block_size)
 	port map(
 	   clk => clk,
 	   reset_n => reset_n,
-	   enable => ready_out and valid_out,
 	   d => wire_r_in,
 	   q => result
 	);
@@ -156,7 +155,8 @@ begin
 	       when READ_INPUT =>
 	           reset_local <= '1';
 	           ready_in <= '1';
-	           if valid_in = '1' then
+	           if valid_in = '1' and ready_in = '1' then
+	               ready_in <= '0';
 	               state <= RUNNING;
 	           end if;
 	       when RUNNING =>
@@ -167,6 +167,7 @@ begin
 	               cnt_en <= '0';
 	               pipo_reg_en <= '0';
 	               if ready_out = '1' then
+	                   valid_out <= '1';
 	                   state <= STORE_OUTPUT;
 	               else
     	               state <= WAIT_OUTPUT;
@@ -174,11 +175,13 @@ begin
 	           end if;
 	       when WAIT_OUTPUT =>
 	           if ready_out <= '1' then
+	               valid_out <= '1';
 	               state <= STORE_OUTPUT;
 	           end if;
 	       when STORE_OUTPUT =>
-	           valid_out <= '1';
-	           state <= RESET;
+	           if ready_out = '1' and valid_out = '1' then
+	               state <= RESET;
+	           end if;
 	       when others =>
 	           state <= RESET;
 	       end case;

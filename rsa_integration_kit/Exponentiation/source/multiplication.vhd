@@ -82,7 +82,7 @@ begin
 	PSEUDO_MOD1: entity work.pseudo_modulo
 	generic map(C_block_size)
 	port map(
-	   r => std_logic_vector(to_unsigned(to_integer(unsigned(wire_r_out)) + to_integer(unsigned(wire_a_b_i)), C_block_size)),
+	   r => std_logic_vector(unsigned(wire_r_out) + unsigned(wire_a_b_i)),
 	   n => wire_modulus_out,
 	   result => wire_mod1_mod2
 	);

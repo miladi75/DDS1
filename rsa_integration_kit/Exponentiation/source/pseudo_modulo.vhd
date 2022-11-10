@@ -32,7 +32,7 @@ begin
     generic map(C_block_size)
     port map(
         a => r,
-        b => std_logic_vector(to_unsigned(to_integer(unsigned(r)) - to_integer(unsigned(n)), C_block_size)),
+        b => std_logic_vector(unsigned(r) - unsigned(n)),
         sel => condition,
         y => result
     );

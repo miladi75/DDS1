@@ -217,7 +217,9 @@ begin
 	   sel => init_c_en,
 	   y => wire_mult_c
 	);
-	
+
+
+
 	--
 	-- State machine
 	--

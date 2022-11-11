@@ -1,7 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.math_real.all;
 
 entity exponentiation_tb is
 	generic (
@@ -57,7 +56,7 @@ begin
            message <= test_message;
 	       key <=     test_key;
 	       modulus <= test_modulus;
-        
+	       
            valid_in <= '1';
 	       ready_out <= '0';
 	   
@@ -80,11 +79,38 @@ begin
 	        x"0000000000000000000000000000000000000000000000000000000000010001", -- key
 	        x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d", -- modulus
 	        x"85ee722363960779206a2b37cc8b64b5fc12a934473fa0204bbaaf714bc90c01");-- expected
+	        
+	   Test(x"6DBD39F7578F288D45F77C72CD42C339382C8FABDE8F9A247680D28812D7C247", -- message
+	        x"0000000000000000000000000000000000000000000000000000000000010001", -- key
+	        x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d", -- modulus
+	        x"299bd501d86465e68e6d7ccff39d063d875f0ed3c24cab019f8257dbb64ae227");-- expected 
+	        
+	   Test(x"6E668092EFB9E176993193E1D66A68019580A8873708266A939196BCD7ACFDE6", -- message
+	        x"0000000000000000000000000000000000000000000000000000000064501111", -- key
+	        x"A9A67DFF3A7B469E7A342406AF1DF30972D54E555702DF806DCB6D00A7D311CD", -- modulus
+	        x"37D53C5EDED3D8481F62ABAEAE1239F8CF6E7122CBB4484381EF6E36113965DE");-- expected
+	        
+	   Test(x"5635ab8cfd7390f2a13bd77238e4dfd2089e0216021806db3b4e8bee2b29c735", -- message
+	        x"0cea1651ef44be1f1f1476b7539bed10d73e3aac782bd9999a1e5a790932bfe9", -- key
+	        x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d", -- modulus
+	        x"2323232323232323232323232323232323232323232323232323232323232323");-- expected
+	        
+	   Test(x"85ee722363960779206a2b37cc8b64b5fc12a934473fa0204bbaaf714bc90c01", -- message
+	        x"0cea1651ef44be1f1f1476b7539bed10d73e3aac782bd9999a1e5a790932bfe9", -- key
+	        x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d", -- modulus
+	        x"0a23232323232323232323232323232323232323232323232323232323232323");-- expected
 	   
+	   Test(x"81dc2a1f43b2a9f27e13c73493204d823eed68ddabe9b79bfbfaa11bbacc35fe", -- message
+	        x"0cea1651ef44be1f1f1476b7539bed10d73e3aac782bd9999a1e5a790932bfe9", -- key
+	        x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d", -- modulus
+	        x"20202020207478742e6e695f317470203a2020202020202020202020454d414e");-- expected
+	        
+	   Test(x"1c6a9b8ec4485bd5a460e171a1f6723680599cfb58315b9c8ce213b0a81ef034", -- message
+	        x"0cea1651ef44be1f1f1476b7539bed10d73e3aac782bd9999a1e5a790932bfe9", -- key
+	        x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d", -- modulus
+	        x"0a23202020202020202020202020202020202020202020202020202020202020");-- expected
+	        
 	   -- Finalizing testbench
-	   report "*******************************";
-	   report "ALL TESTS FINISHED SUCCESSFULLY";
-	   report "*******************************";
 	   done <= true;
 	   wait;
 	end process;    

@@ -41,7 +41,8 @@ architecture multBehave of multiplication is
     signal i : std_logic_vector(integer(ceil(log2(real(C_block_size)))) - 1 downto 0) := (others => '0');
     signal wire_b_i, cnt_en, pipo_reg_en : std_logic := '0';
     signal reset_local : std_logic := '1';
-    signal wire_a_out, wire_b_out, wire_modulus_out, wire_a_b_i, wire_r_in, wire_r_out, wire_mod1_mod2 : std_logic_vector(C_block_size - 1 downto 0);
+    signal wire_a_out, wire_b_out, wire_modulus_out, wire_a_b_i : std_logic_vector(C_block_size - 1 downto 0);
+    signal wire_r_in, wire_r_out, wire_mod1_mod2 : std_logic_vector(C_block_size downto 0);
 begin
 	COUNTER: entity work.counter
 	generic map(integer(ceil(log2(real(C_block_size)))))
@@ -70,7 +71,7 @@ begin
 	);
 	
 	SHIFT_PIPO_REG_r: entity work.PIPO_shift_register
-	generic map(C_block_size)
+	generic map(C_block_size + 1)
 	port map(
 	   d => wire_r_in,
 	   clk => clk,
@@ -80,18 +81,18 @@ begin
 	);
 	
 	PSEUDO_MOD1: entity work.pseudo_modulo
-	generic map(C_block_size)
+	generic map(C_block_size + 1)
 	port map(
-	   r => std_logic_vector(unsigned(wire_r_out) + unsigned(wire_a_b_i)),
-	   n => wire_modulus_out,
+	   r => std_logic_vector(unsigned(wire_r_out) + unsigned('0' & wire_a_b_i)),
+	   n => '0' & wire_modulus_out,
 	   result => wire_mod1_mod2
 	);
 	
 	PSEUDO_MOD2: entity work.pseudo_modulo
-	generic map(C_block_size)
+	generic map(C_block_size + 1)
 	port map(
 	   r => wire_mod1_mod2,
-	   n => wire_modulus_out,
+	   n => '0' & wire_modulus_out,
 	   result => wire_r_in
 	);
 	
@@ -130,7 +131,7 @@ begin
 	port map(
 	   clk => clk,
 	   reset_n => reset_n,
-	   d => wire_r_in,
+	   d => wire_r_in(C_block_size - 1 downto 0),
 	   q => result
 	);
 	

@@ -1,5 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+use ieee.math_real.all;
 
 
 entity exponentiation_tb is
@@ -25,6 +27,8 @@ architecture expBehave of exponentiation_tb is
 	
 	constant period : time := 2 ns;
     signal done : boolean := false;
+    
+    signal expected : std_logic_vector(C_block_size-1 downto 0);
 
 begin
 	i_exponentiation : entity work.exponentiation
@@ -49,12 +53,13 @@ begin
     key <=     x"0000000000000000000000000000000000000000000000000000000000010001";
     modulus <= x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d";
 	-- Should be 85ee722363960779206a2b37cc8b64b5fc12a934473fa0204bbaaf714bc90c01
+	
 
     valid_in <= '0', '1' after 2*period, '0' after 4*period;--, '1' after 8*period;
     ready_out <= '0', '1' after 2*period;
-    
-    
-    /*i_multiplication : entity work.multiplication
+     
+   /*
+    i_multiplication : entity work.multiplication
 		port map (
 			a         => message  ,
 			b         => key      ,
@@ -72,12 +77,14 @@ begin
     reset_n <= '0', '1' after Period;
     done <= true after 12 ms;
 
-    message <= x"0000000000000000000000000000000000000000000000000000000000000013", x"0000000000000000000000000000000000000000000000000000000000000004" after 5*period; -- 19, 4
-    key <=     x"0000000000000000000000000000000000000000000000000000000000000013", x"0000000000000000000000000000000000000000000000000000000000000004" after 5*period; -- 19, 4
-    modulus <= x"0000000000000000000000000000000000000000000000000000000000000077"; -- 119
+    message <= x"0a23232323232323232323232323232323232323232323232323232323232323";
+    key <=     x"0000000000000000000000000000000000000000000000000000000000010001";
+    modulus <= x"99925173ad65686715385ea800cd28120288fc70a9bc98dd4c90d676f8ff768d";
 
-    valid_in <= '0', '1' after 2*period, '0' after 4*period, '1' after 8*period;
+    valid_in <= '0', '1' after 2*period, '0' after 4*period;
     ready_out <= '0', '1' after 2*period;
+    
+    expected <= std_logic_vector((unsigned(message) * unsigned(key)) mod unsigned(modulus));
     */
     
 end expBehave;

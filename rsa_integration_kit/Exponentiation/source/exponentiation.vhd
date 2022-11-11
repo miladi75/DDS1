@@ -29,7 +29,10 @@ entity exponentiation is
 
 		--utility
 		clk 		: in STD_LOGIC;
-		reset_n 	: in STD_LOGIC
+		reset_n 	: in STD_LOGIC;
+		
+		msgin_last  : in STD_LOGIC;
+		msgout_last : out STD_LOGIC
 	);
 end exponentiation;
 
@@ -40,7 +43,7 @@ architecture expBehave of exponentiation is
 
     signal i : std_logic_vector(integer(ceil(log2(real(C_block_size)))) - 1 downto 0) := (others => '0');
     signal wire_key_i_in, cnt_en, valid_in_mul, ready_out_mul, ready_in_cp, valid_out_cp, ready_in_pp, valid_out_pp, init_p_en, init_c_en : std_logic := '0';
-    signal wire_key_i_out : std_logic_vector(0 downto 0);
+    signal wire_key_i_out, wire_msgout_last, wire_msgin_last_out : std_logic_vector(0 downto 0);
     signal reset_local : std_logic := '1';
     signal wire_p_in, wire_p_out, wire_c_in, wire_c_out, wire_mul_c_out, wire_message_out, wire_key_out, wire_modulus_out, wire_mult_p, wire_mult_c : std_logic_vector(C_block_size - 1 downto 0);
 begin
@@ -157,6 +160,16 @@ begin
 	   q => wire_modulus_out
 	);
 	
+	REG_msgin_last : entity work.register_reset_n_enable
+	generic map(1)
+	port map(
+	   clk => clk,
+	   reset_n => reset_n,
+	   enable => valid_in and ready_in,
+	   d => (0 => msgin_last),
+	   q => wire_msgin_last_out
+	);
+	
 	REG_result: entity work.register_reset_n
 	generic map(C_block_size)
 	port map(
@@ -165,6 +178,27 @@ begin
 	   d => wire_c_in,
 	   q => result
 	);
+	
+	--REG_MSG_LAST : entity work.register_reset_n_enable
+	--generic map(1)
+	--port map(
+	--   clk => clk,
+	--   reset_n => reset_n,
+	--   enable => valid_out and ready_out,
+	--   d => (0 => msgin_last),
+	--   q => wire_msgout_last
+	--);
+	
+	MUX2X1_MSGLAST : entity work.mux2x1
+	generic map(1)
+	port map(
+	   a => (others => '0'),
+	   b => wire_msgin_last_out,
+	   sel => valid_out and ready_out,
+	   y => wire_msgout_last
+	);
+	
+	msgout_last <= wire_msgout_last(0);
 	
 	MUX2X1_INIT_P: entity work.mux2x1
 	generic map(C_block_size)
@@ -247,6 +281,7 @@ begin
 	       when STORE_OUTPUT =>
 	           ready_out_mul <= '0';
 	           if ready_out = '1' and valid_out = '1' then
+	               valid_out <= '0';
 	               state <= RESET;
 	           end if;
 	       when others =>

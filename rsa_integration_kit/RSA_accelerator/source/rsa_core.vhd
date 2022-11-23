@@ -67,8 +67,6 @@ entity rsa_core is
 end rsa_core;
 
 architecture rtl of rsa_core is
-    constant AVAILABLE : std_logic := '1';
-    constant TAKEN : std_logic := '0';
     type StateType is (RESET, WAIT_NEW_TASK);
     signal state : StateType := RESET;
 begin
@@ -106,7 +104,7 @@ begin
 	       when RESET =>
 	           state <= WAIT_NEW_TASK;
            when WAIT_NEW_TASK =>               
-                          
+               
 	       end case;
 	   end if;
 	end process;

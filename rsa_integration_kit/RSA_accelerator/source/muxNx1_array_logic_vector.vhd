@@ -2,9 +2,8 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
 package my_type is
-  generic (C_BLOCK_SIZE, NB_CORE : INTEGER);
-  type array_std_logic_vector is array (0 to NB_CORE-1) of std_logic_vector(C_BLOCK_SIZE-1 downto 0);
-end package my_type;
+        type array_std_logic_vector is array(natural range <>) of std_logic_vector;
+end package;
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
@@ -18,7 +17,7 @@ entity muxNx1_array_logic_vector is
 		NB_CORE : integer := 4
 	);
     port (
-        input : in array_std_logic_vector;
+        input : in array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE downto 0);
         sel : in INTEGER range 0 to NB_CORE-1;
         output : out STD_LOGIC_VECTOR(C_BLOCK_SIZE-1 downto 0)
     );

@@ -128,11 +128,28 @@ begin
 	       case state is
 	       when RESET =>
 	           state <= WAIT_NEW_TASK;
-           when WAIT_NEW_TASK =>               
-               
+           when WAIT_NEW_TASK => 
+               if msgout_ready = '1' and msgout_valid_array(pointer_out) = '1' then
+                   state <= FREE;             
+               elsif msgin_valid = '1'  and msgin_ready_array(pointer_in) = '1' then
+                   state <= ALLOCATE;
+               end if;           
            when ALLOCATE => 
-               
+               msgin_valid_array <= (pointer_in => msgin_valid, others => '0');
+               if pointer_in = NB_CORE -1 then
+                   pointer_in <= 0;
+               else
+                   pointer_in <= pointer_in +1;
+               end if;
+               state <= WAIT_NEW_TASK;
            when FREE => 
+               msgout_ready_array <= (pointer_out => msgout_ready, others => '0');
+               if pointer_out = NB_CORE-1 then
+                    pointer_out <= 0;
+               else
+                    pointer_out <= pointer_out + 1;
+               end if;
+               state <= WAIT_NEW_TASK;
 	       end case;
 	   end if;
 	end process;

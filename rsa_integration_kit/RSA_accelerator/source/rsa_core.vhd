@@ -67,9 +67,9 @@ entity rsa_core is
 end rsa_core;
 
 architecture rtl of rsa_core is
-    type StateType is (RESET, WAIT_NEW_TASK);
+    type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE);
     signal state : StateType := RESET;
-begin
+begin   
     GEN_EXP:
     for i in 0 to NB_CORE - 1 generate
         EXP_X: entity work.exponentiation
@@ -105,6 +105,9 @@ begin
 	           state <= WAIT_NEW_TASK;
            when WAIT_NEW_TASK =>               
                
+           when ALLOCATE => 
+               
+           when FREE => 
 	       end case;
 	   end if;
 	end process;

@@ -69,7 +69,7 @@ entity rsa_core is
 end rsa_core;
 
 architecture rtl of rsa_core is
-    type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE);
+    type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE, TASK_END);
     signal state : StateType := RESET;
     signal msgout_data_array : array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE-1 downto 0);
     signal msgout_last_array : std_logic_vector(0 to NB_CORE-1);
@@ -78,7 +78,39 @@ architecture rtl of rsa_core is
     signal msgout_valid_array : std_logic_vector(0 to NB_CORE-1);
     signal msgout_ready_array : std_logic_vector(0 to NB_CORE-1);
     signal pointer_out, pointer_in : integer := 0;
-begin    
+begin
+    DEMUXNTO1_msgin_valid : entity work.demux1xN
+    generic map(NB_CORE)
+    port map(
+        input => msgin_valid,
+        sel => pointer_in,
+        output => msgin_valid_array
+    );
+    
+    DEMUXNTO1_msgout_ready : entity work.demux1xN
+    generic map(NB_CORE)
+    port map(
+        input => msgout_ready,
+        sel => pointer_out,
+        output => msgout_ready_array
+    );
+
+    MUXNTO1_msgin_ready : entity work.muxNx1
+    generic map(NB_CORE)
+    port map(
+        input => msgin_ready_array,
+        sel => pointer_in,
+        output => msgin_ready
+    );
+        
+    MUXNTO1_msgout_valid : entity work.muxNx1
+    generic map(NB_CORE)
+    port map(
+        input => msgout_valid_array,
+        sel => pointer_out,
+        output => msgout_valid
+    );
+            
     MUXNTO1_msgout_last : entity work.muxNx1
     generic map(NB_CORE)
     port map(
@@ -86,7 +118,7 @@ begin
         sel => pointer_out,
         output => msgout_last
     );
-    
+        
     MUXNTO1_msgout_data : entity work.muxNx1_array_logic_vector
     generic map(C_BLOCK_SIZE, NB_CORE)
     port map(
@@ -128,6 +160,8 @@ begin
 	       case state is
 	       when RESET =>
 	           state <= WAIT_NEW_TASK;
+	           pointer_in <= 0;
+	           pointer_out <= 0;
            when WAIT_NEW_TASK => 
                if msgout_ready = '1' and msgout_valid_array(pointer_out) = '1' then
                    state <= FREE;             
@@ -135,7 +169,6 @@ begin
                    state <= ALLOCATE;
                end if;           
            when ALLOCATE => 
-               msgin_valid_array <= (pointer_in => msgin_valid, others => '0');
                if pointer_in = NB_CORE -1 then
                    pointer_in <= 0;
                else
@@ -143,12 +176,13 @@ begin
                end if;
                state <= WAIT_NEW_TASK;
            when FREE => 
-               msgout_ready_array <= (pointer_out => msgout_ready, others => '0');
                if pointer_out = NB_CORE-1 then
                     pointer_out <= 0;
                else
                     pointer_out <= pointer_out + 1;
                end if;
+               state <= TASK_END;
+           when TASK_END =>
                state <= WAIT_NEW_TASK;
 	       end case;
 	   end if;

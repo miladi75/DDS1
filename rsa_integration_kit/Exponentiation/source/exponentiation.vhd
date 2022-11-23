@@ -266,8 +266,8 @@ begin
 	           end if;
 	       when WAIT_OUTPUT =>
 	           ready_out_mul <= '0';
+	           valid_out <= '1';
 	           if ready_out = '1' then
-	               valid_out <= '1';
 	               state <= STORE_OUTPUT;
 	           end if;
 	       when STORE_OUTPUT =>

@@ -19,6 +19,8 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.my_type.all;
+
 entity rsa_core is
 	generic (
 		-- Users to add parameters here
@@ -69,7 +71,26 @@ end rsa_core;
 architecture rtl of rsa_core is
     type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE);
     signal state : StateType := RESET;
-begin   
+    signal msgout_data_array : array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE downto 0);
+    signal msgout_last_array : std_logic_vector(0 to NB_CORE-1);
+    signal pointer_out, pointer_in : integer;
+begin
+    MUXNTO1_msgout_last : entity work.muxNx1
+    generic map(NB_CORE)
+    port map(
+        input => msgout_last_array,
+        sel => pointer_out,
+        output => msgout_last
+    );
+    
+    MUXNTO1_msgout_data : entity work.muxNx1_array_logic_vector
+    generic map(C_BLOCK_SIZE, NB_CORE)
+    port map(
+        input => msgout_data_array,
+        sel => pointer_out,
+        output => msgout_data
+    );
+
     GEN_EXP:
     for i in 0 to NB_CORE - 1 generate
         EXP_X: entity work.exponentiation
@@ -81,12 +102,12 @@ begin
 			ready_in  => ,
 			ready_out => ,
 			valid_out => ,
-			result    => ,
-			modulus   => key_n       ,
-			clk       => clk         ,
-			reset_n   => reset_n     ,
-			msgin_last => ,
-			msgout_last => 
+			result    => msgout_data_array(i),
+			modulus   => key_n,
+			clk       => clk,
+			reset_n   => reset_n,
+			msgin_last => msgin_last,
+			msgout_last => msgout_last_array(i)
         );
     end generate;
     

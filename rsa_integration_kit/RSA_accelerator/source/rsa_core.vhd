@@ -78,21 +78,7 @@ architecture rtl of rsa_core is
     signal msgout_valid_array : std_logic_vector(0 to NB_CORE-1);
     signal msgout_ready_array : std_logic_vector(0 to NB_CORE-1);
     signal pointer_out, pointer_in : integer := 0;
-begin
-    DEMUX1TON_msgin_valid : entity work.demux1xN
-    generic map(NB_CORE)
-    port map(
-        input => msgin_valid,
-        sel => pointer_in,
-        output => msgin_valid_array
-    );
-    DEMUX1TON_msgout_ready : entity work.demux1xN
-    generic map(NB_CORE)
-    port map (
-        input => msgout_ready,
-        sel => pointer_out,
-        output => msgout_ready_array
-    );    
+begin    
     MUXNTO1_msgout_last : entity work.muxNx1
     generic map(NB_CORE)
     port map(

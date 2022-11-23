@@ -24,7 +24,7 @@ entity muxNx1_array_logic_vector is
     );
 end muxNx1_array_logic_vector;
 
-architecture muxNx1Behav of muxNx1 is
+architecture muxNx1Behav of muxNx1_array_logic_vector is
 begin
     output <= input(sel);
 end muxNx1Behav;

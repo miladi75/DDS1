@@ -22,7 +22,8 @@ use ieee.numeric_std.all;
 entity rsa_core is
 	generic (
 		-- Users to add parameters here
-		C_BLOCK_SIZE          : integer := 256
+		C_BLOCK_SIZE          : integer := 256;
+		NB_CORE               : integer := 1
 	);
 	port (
 		-----------------------------------------------------------------------------
@@ -66,27 +67,47 @@ entity rsa_core is
 end rsa_core;
 
 architecture rtl of rsa_core is
-
+    constant AVAILABLE : std_logic := '1';
+    constant TAKEN : std_logic := '0';
+    type StateType is (RESET, WAIT_NEW_TASK);
+    signal state : StateType := RESET;
 begin
-	i_exponentiation : entity work.exponentiation
-		generic map (
-			C_block_size => C_BLOCK_SIZE
-		)
-		port map (
-			message   => msgin_data  ,
+    GEN_EXP:
+    for i in 0 to NB_CORE - 1 generate
+        EXP_X: entity work.exponentiation
+        generic map(C_BLOCK_SIZE)
+        port map(
+            message   => msgin_data  ,
 			key       => key_e_d     ,
-			valid_in  => msgin_valid ,
-			ready_in  => msgin_ready ,
-			ready_out => msgout_ready,
-			valid_out => msgout_valid,
-			result    => msgout_data ,
+			valid_in  => ,
+			ready_in  => ,
+			ready_out => ,
+			valid_out => ,
+			result    => ,
 			modulus   => key_n       ,
 			clk       => clk         ,
 			reset_n   => reset_n     ,
-			msgin_last => msgin_last ,
-			msgout_last => msgout_last
-		);
-
-	--msgout_last  <= msgin_last;
+			msgin_last => ,
+			msgout_last => 
+        );
+    end generate;
+    
 	rsa_status   <= (others => '0');
+	
+	--
+	-- State machine
+	--
+	process (clk, reset_n)
+	begin
+	   if reset_n = '0' then
+	       state <= RESET;
+	   elsif rising_edge(clk) then
+	       case state is
+	       when RESET =>
+	           state <= WAIT_NEW_TASK;
+           when WAIT_NEW_TASK =>               
+                          
+	       end case;
+	   end if;
+	end process;
 end rtl;

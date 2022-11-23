@@ -178,17 +178,7 @@ begin
 	   d => wire_c_in,
 	   q => result
 	);
-	
-	--REG_MSG_LAST : entity work.register_reset_n_enable
-	--generic map(1)
-	--port map(
-	--   clk => clk,
-	--   reset_n => reset_n,
-	--   enable => valid_out and ready_out,
-	--   d => (0 => msgin_last),
-	--   q => wire_msgout_last
-	--);
-	
+		
 	MUX2X1_MSGLAST : entity work.mux2x1
 	generic map(1)
 	port map(

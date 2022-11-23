@@ -25,7 +25,7 @@ entity rsa_core is
 	generic (
 		-- Users to add parameters here
 		C_BLOCK_SIZE          : integer := 256;
-		NB_CORE               : integer := 1
+		NB_CORE               : integer := 4
 	);
 	port (
 		-----------------------------------------------------------------------------
@@ -69,7 +69,7 @@ entity rsa_core is
 end rsa_core;
 
 architecture rtl of rsa_core is
-    type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE, TASK_END);
+    type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE);
     signal state : StateType := RESET;
     signal msgout_data_array : array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE-1 downto 0);
     signal msgout_last_array : std_logic_vector(0 to NB_CORE-1);
@@ -181,10 +181,8 @@ begin
                else
                     pointer_out <= pointer_out + 1;
                end if;
-               state <= TASK_END;
-           when TASK_END =>
                state <= WAIT_NEW_TASK;
-	       end case;
+           end case;
 	   end if;
 	end process;
 end rtl;

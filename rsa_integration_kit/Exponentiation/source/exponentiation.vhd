@@ -38,7 +38,7 @@ end exponentiation;
 
 
 architecture expBehave of exponentiation is
-    type StateType is (RESET, READ_INPUT, RUNNING, WAIT_MULT, WAIT_OUTPUT, STORE_OUTPUT);
+    type StateType is (RESET, READ_INPUT, RUNNING, WAIT_MULT, /*WAIT_OUTPUT,*/ STORE_OUTPUT);
     signal state : StateType := RESET;
 
     signal i : std_logic_vector(integer(ceil(log2(real(C_block_size)))) - 1 downto 0) := (others => '0');
@@ -253,25 +253,26 @@ begin
 	               init_p_en <= '0';
 	               init_c_en <= '0';
 	               if tmp_i >= C_block_size - 1 then
-	                   if ready_out = '1' then
-	                       valid_out <= '1';
+	                   --if ready_out = '1' then
+	                   --    valid_out <= '1';
 	                       state <= STORE_OUTPUT;
-	                   else
-	                       state <= WAIT_OUTPUT;
-	                   end if;
+	                   --else
+	                   --    state <= WAIT_OUTPUT;
+	                   --end if;
 	               else
 	                   cnt_en <= '1';
 	                   state <= RUNNING;
 	               end if;
 	           end if;
-	       when WAIT_OUTPUT =>
+	       /*when WAIT_OUTPUT =>
 	           ready_out_mul <= '0';
 	           valid_out <= '1';
 	           if ready_out = '1' then
 	               state <= STORE_OUTPUT;
-	           end if;
+	           end if;*/
 	       when STORE_OUTPUT =>
 	           ready_out_mul <= '0';
+	           valid_out <= '1';
 	           if ready_out = '1' and valid_out = '1' then
 	               valid_out <= '0';
 	               state <= RESET;

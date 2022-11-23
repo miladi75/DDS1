@@ -17,7 +17,7 @@ entity muxNx1_array_logic_vector is
 		NB_CORE : integer := 4
 	);
     port (
-        input : in array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE downto 0);
+        input : in array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE-1 downto 0);
         sel : in INTEGER range 0 to NB_CORE-1;
         output : out STD_LOGIC_VECTOR(C_BLOCK_SIZE-1 downto 0)
     );

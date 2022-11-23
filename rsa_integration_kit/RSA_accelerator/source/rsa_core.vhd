@@ -71,9 +71,13 @@ end rsa_core;
 architecture rtl of rsa_core is
     type StateType is (RESET, WAIT_NEW_TASK, ALLOCATE, FREE);
     signal state : StateType := RESET;
-    signal msgout_data_array : array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE downto 0);
+    signal msgout_data_array : array_std_logic_vector(0 to NB_CORE-1)(C_BLOCK_SIZE-1 downto 0);
     signal msgout_last_array : std_logic_vector(0 to NB_CORE-1);
-    signal pointer_out, pointer_in : integer;
+    signal msgin_valid_array : std_logic_vector(0 to NB_CORE-1);
+    signal msgin_ready_array : std_logic_vector(0 to NB_CORE-1);
+    signal msgout_valid_array : std_logic_vector(0 to NB_CORE-1);
+    signal msgout_ready_array : std_logic_vector(0 to NB_CORE-1);
+    signal pointer_out, pointer_in : integer := 0;
 begin
     MUXNTO1_msgout_last : entity work.muxNx1
     generic map(NB_CORE)
@@ -98,10 +102,10 @@ begin
         port map(
             message   => msgin_data  ,
 			key       => key_e_d     ,
-			valid_in  => ,
-			ready_in  => ,
-			ready_out => ,
-			valid_out => ,
+			valid_in  => msgin_valid_array(i),
+			ready_in  => msgin_ready_array(i),
+			ready_out => msgout_ready_array(i),
+			valid_out => msgout_valid_array(i),
 			result    => msgout_data_array(i),
 			modulus   => key_n,
 			clk       => clk,

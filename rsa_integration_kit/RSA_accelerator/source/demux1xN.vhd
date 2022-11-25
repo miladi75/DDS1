@@ -46,6 +46,9 @@ end demux1xN;
 
 architecture demux1xNBehav of demux1xN is
 begin
-    output <= (others => '0');
-    output(sel) <= input;
+    process (input)
+    begin
+        output <= (others => '0');
+        output(sel) <= input;
+    end process;
 end demux1xNBehav;
